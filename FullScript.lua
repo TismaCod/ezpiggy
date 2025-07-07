@@ -8,12 +8,18 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Création de la fenêtre principale Rayfield
 local Window = Rayfield:CreateWindow({
-    Name = "EZ 🐷 HUB",
+    Name = "EZ PIGGY 🐷",
     LoadingTitle = "In Progression...",
     LoadingSubtitle = "by Mimir💤",
     Discord = {
         Enabled = true,
-        Invite = "MuVPBab66F"
+        Invite = "MuVPBab66F",
+        RememberJoins = true
+    },
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "EZPiggyHubConfig",
+        FileName = "config.json"
     }
 })
 
@@ -138,7 +144,6 @@ function ESP:refresh()
     local Workspace = game:GetService("Workspace")
     local usedHighlights = {}
     local usedNameTags = {}
-    -- Enemy ESP (Piggy + Traitor)
     if self.piggy then
         local piggyNPC = Workspace:FindFirstChild("PiggyNPC")
         if piggyNPC then
@@ -157,7 +162,6 @@ function ESP:refresh()
                 usedNameTags[piggyNPC] = true
             end
         end
-        -- Ajout de TOUS les Piggy (Enemy sans Ghost)
         for _, model in ipairs(Workspace:GetChildren()) do
             if model:IsA("Model") and Players:FindFirstChild(model.Name) then
                 local isEnemy = model:FindFirstChild("Enemy") and model.Enemy:IsA("BoolValue") and model.Enemy.Value
@@ -170,7 +174,6 @@ function ESP:refresh()
                 end
             end
         end
-        -- Ajout des Traitors
         for _, model in ipairs(Workspace:GetChildren()) do
             if model:IsA("Model") and Players:FindFirstChild(model.Name) then
                 local isTraitor = model:FindFirstChild("Traitor") and model.Traitor:IsA("BoolValue") and model.Traitor.Value
@@ -180,6 +183,32 @@ function ESP:refresh()
                     self:addOrUpdateNameTag(model, "Traitor : " .. model.Name)
                     usedHighlights[model] = true
                     usedNameTags[model] = true
+                end
+            end
+        end
+        -- Ajout : highlight sur tous les Model avec Enemy dans LoadedMap
+        local loadedMap = Workspace:FindFirstChild("LoadedMap")
+        if loadedMap then
+            for _, descendant in ipairs(loadedMap:GetDescendants()) do
+                if descendant:IsA("Model") and descendant:FindFirstChild("Enemy") and descendant.Enemy:IsA("BoolValue") then
+                    self:addOrUpdateHighlight(descendant, self.enemyColor)
+                    usedHighlights[descendant] = true
+                end
+            end
+        end
+        local Players = game:GetService("Players")
+        local playerNames = {}
+        for _, p in ipairs(Players:GetPlayers()) do
+            table.insert(playerNames, p.Name)
+        end
+        for _, model in ipairs(Workspace:GetChildren()) do
+            if model:IsA("Model") and not table.find(playerNames, model.Name)
+                and model.Name ~= "MainMenuScreen" and model.Name ~= "Spawns" then
+                for _, descendant in ipairs(model:GetDescendants()) do
+                    if descendant:IsA("Model") and descendant:FindFirstChild("Enemy") and descendant.Enemy:IsA("BoolValue") then
+                        self:addOrUpdateHighlight(descendant, self.enemyColor)
+                        usedHighlights[descendant] = true
+                    end
                 end
             end
         end
@@ -749,8 +778,23 @@ TabNoClip:CreateToggle({
         local loadedMap = Workspace:FindFirstChild("LoadedMap")
         if loadedMap then
             for _, part in ipairs(loadedMap:GetDescendants()) do
-                if part:IsA("BasePart") and part.Transparency == 1 then
+                if part:IsA("BasePart") and part.Transparency > 0.8 then
                     part.CanCollide = not state and true or false
+                end
+            end
+        end
+        local Players = game:GetService("Players")
+        local playerNames = {}
+        for _, p in ipairs(Players:GetPlayers()) do
+            table.insert(playerNames, p.Name)
+        end
+        for _, model in ipairs(Workspace:GetChildren()) do
+            if model:IsA("Model") and not table.find(playerNames, model.Name)
+                and model.Name ~= "MainMenuScreen" and model.Name ~= "Spawns" then
+                for _, descendant in ipairs(model:GetDescendants()) do
+                    if descendant:IsA("BasePart") and descendant.Transparency > 0.8 then
+                        descendant.CanCollide = not state and true or false
+                    end
                 end
             end
         end
