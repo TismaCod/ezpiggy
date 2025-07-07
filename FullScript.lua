@@ -8,9 +8,13 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Création de la fenêtre principale Rayfield
 local Window = Rayfield:CreateWindow({
-    Name = "EZ 🐷",
+    Name = "EZ 🐷 HUB",
     LoadingTitle = "In Progression...",
-    LoadingSubtitle = "by Mimir💤"
+    LoadingSubtitle = "by Mimir💤",
+    Discord = {
+        Enabled = true,
+        Invite = "MuVPBab66F"
+    }
 })
 
 --[[ =========================
@@ -816,6 +820,7 @@ TabChangelogs:CreateParagraph({
 • Modern and clear Rayfield interface
 • Changelogs always accessible
 • Notifications for every important action
+• Join our Discord: discord.gg/MuVPBab66F
 
 ]]
 })
